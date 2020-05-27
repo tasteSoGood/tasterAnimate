@@ -1,0 +1,2 @@
+FFMPEG_BIN = "ffmpeg"
+VIDEO_FRAME_RATE = 30
