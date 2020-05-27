@@ -1,5 +1,6 @@
 import numpy as np
 from core.canvas import canvas
+from demo import game_of_life
 
 def animate_demo():
     width, height = 2000, 1600
@@ -23,4 +24,4 @@ def animate_demo():
 
 
 if __name__ == "__main__":
-    animate_demo()
+    game_of_life.main()

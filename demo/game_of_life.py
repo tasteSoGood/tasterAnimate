@@ -1,57 +1,69 @@
 import numpy as np
 from constants import FFMPEG_BIN
 from core.animate import animate
+from core.canvas import canvas
 
-def chessboard2frame(chessboard, width, height, width_scale, height_scale):
-    frame = np.zeros((width * width_scale, height * height_scale, 4), dtype = np.uint8)
 
-    for i in range(width):
-        for j in range(height):
-            if chessboard[i, j]:
-                frame[i * width_scale : (i + 1) * width_scale, j * height_scale : (j + 1) * height_scale, :] = 255
-
-    return frame
-
-def main():
-    width, height = 72, 128
-    anim = animate(height*32, width*32, "output.mp4")
-    anim.open_writing_pipeline()
-
-    frame = np.zeros((width, height), dtype = int)
-
-    seed = 20000
-
-    for i in zip(np.random.randint(0, width, seed), np.random.randint(0, height, seed)):
-        frame[i[0], i[1]] = 1
-
-    anim.write_frame(chessboard2frame(frame, width, height, 32, 32))
-
+class game_of_life:
     """
     康威生命游戏
-
-    x[i-1, j-1] x[i-1, j] x[i-1, j+1]
-    x[i, j-1] x[i, j] x[i, j+1]
-    x[i+1, j-1] x[i+1, j] x[i+1, j+1]
     """
+    def __init__(self, width, height):
+        self._row = height
+        self._col = width
+        self._board = np.zeros((self._row, self._col), dtype = np.uint8)
 
-    count_live = lambda i, j: (frame[i - 1, j - 1] + frame[i - 1, j] + frame[i - 1, j + 1] + frame[i, j - 1] + frame[i, j + 1] + frame[i + 1, j - 1] + frame[i + 1, j] + frame[i + 1, j + 1])
+    def random_init(self, seed_nums):
+        x = np.random.randint(0, self._row, seed_nums)
+        y = np.random.randint(0, self._col, seed_nums)
+        for i in zip(x, y):
+            self._board[i[0], i[1]] = 1
 
-    for time in range(20):
-        temp_frame = frame.copy()
-        for i in range(1, width - 1):
-            for j in range(1, height - 1):
-                live = count_live(i, j)
-                if frame[i, j] == 0 and live == 3:
-                    temp_frame[i, j] = 1
-                elif frame[i, j] == 1 and live > 3:
-                    temp_frame[i, j] = 0
-                elif frame[i, j] == 1 and live < 2:
-                    temp_frame[i, j] = 0
+    def _count_live(self, i, j):
+        board = self._board
+        return board[i - 1, j - 1] + board[i - 1, j] + board[i - 1, j + 1] \
+             + board[i, j - 1] + board[i, j + 1] \
+             + board[i + 1, j - 1] + board[i + 1, j] + board[i + 1, j + 1]
+
+    def update(self):
+        temp_board = self._board.copy()
+
+        for i in range(1, self._row - 1):
+            for j in range(1, self._col - 1):
+                live = self._count_live(i, j)
+                if self._board[i, j] == 0 and live == 3:
+                    temp_board[i, j] = 1
+                elif self._board[i, j] == 1 and live > 3:
+                    temp_board[i, j] = 0
+                elif self._board[i, j] == 1 and live < 2:
+                    temp_board[i, j] = 0
+
+        self._board = temp_board
+
+    def get_board(self):
+        return self._board
+
+
+def update_from_board(board, row_scale, col_scale):
+    res = board.copy() * 255
+    res = np.repeat(res, row_scale, axis = 0)
+    res = np.repeat(res, col_scale, axis = 1)
+    res = res.reshape((*res.shape, 1))
+    return np.concatenate((res, res, res, res), axis = -1)
+
+
+def main():
+    width, height, scale = 256, 144, 8
+    canv = canvas(width * scale, height * scale, 1, "output.mp4")
+    game = game_of_life(width, height)
+    game.random_init(10000)
+
+    for time in range(3000):
+        game.update()
+        canv.set_frame_array(update_from_board(game.get_board(), scale, scale))
+        canv.update()
 
         if time % 10 == 0:
             print('正在写入第%d帧......' % time)
 
-        frame = temp_frame
-        anim.write_frame(chessboard2frame(frame, width, height, 32, 32))
-
-    anim.close_writing_pipeline()
+    canv.save()

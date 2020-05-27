@@ -27,6 +27,12 @@ class canvas:
         self._cairo_context = ctx
         return ctx
 
+    def get_frame_array(self):
+        return self._frame_array
+
+    def set_frame_array(self, frame_array):
+        self._frame_array = frame_array
+
     def update(self):
         self._animate.write_frame(self._frame_array)
 
