@@ -2,7 +2,7 @@ import numpy as np
 from core.animate import animate
 from core.aniobject import aniobject
 import cairo
-from constants import VIDEO_FRAME_RATE
+from config.constants import VIDEO_FRAME_RATE
 
 class canvas:
     '''
@@ -50,7 +50,7 @@ class canvas:
     def update(self, clear = False):
         # 写入帧
         for key, obj in self._animate_objs.items():
-            obj.draw_path(self._cairo_context)
+            obj.draw(self._cairo_context)
 
         self._animate.write_frame(self._frame_array)
 

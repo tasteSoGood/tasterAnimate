@@ -1,7 +1,7 @@
 import subprocess
 import numpy as np
-from constants import FFMPEG_BIN
-from constants import VIDEO_FRAME_RATE
+from config.constants import FFMPEG_BIN
+from config.constants import VIDEO_FRAME_RATE
 
 class animate:
     def __init__(self, width, height, video_name = 'untitled.mp4', frame_rate = VIDEO_FRAME_RATE):
