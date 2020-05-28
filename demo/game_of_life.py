@@ -19,6 +19,9 @@ class game_of_life:
         for i in zip(x, y):
             self._board[i[0], i[1]] = 1
 
+    def user_init(self, board):
+        self._board = board
+
     def _count_live(self, i, j):
         board = self._board
         return board[i - 1, j - 1] + board[i - 1, j] + board[i - 1, j + 1] \
@@ -52,13 +55,26 @@ def update_from_board(board, row_scale, col_scale):
     return np.concatenate((res, res, res, res), axis = -1)
 
 
-def main():
-    width, height, scale = 256, 144, 8
-    canv = canvas(width * scale, height * scale, 1, "output.mp4")
-    game = game_of_life(width, height)
-    game.random_init(10000)
 
-    for time in range(3000):
+def pattern(board, i, j):
+    for p in zip([i, i + 1, i + 2, i + 2, i + 2], [j + 1, j + 2, j, j + 1, j + 2]):
+        board[p[0], p[1]] = 1
+
+
+def main():
+    width, height, scale = 128, 128, 16
+    canv = canvas(width * scale, height * scale, 1, 'output.mp4')
+    game = game_of_life(width, height)
+
+    board = game.get_board()
+
+    for i in range(20):
+        for j in range(20):
+            pattern(board, 1 + 5 * i, 1 + 5 * j)
+
+    game.user_init(board)
+
+    for time in range(300):
         game.update()
         canv.set_frame_array(update_from_board(game.get_board(), scale, scale))
         canv.update()
