@@ -94,6 +94,10 @@ class aniobject(object):
         self._points = target_points
 
 
+
+'''
+正圆
+'''
 class circle(aniobject):
     def __init__(self, px, py, rad, points=500, **kwargs):
         x = np.linspace(0, 2 * np.pi, points)
@@ -106,6 +110,9 @@ class circle(aniobject):
         super(circle, self).__init__(self._x, self._y, **kwargs)
 
 
+'''
+矩形
+'''
 class rectangle(aniobject):
     def __init__(self, p1_x, p1_y, p2_x, p2_y, points = 500, **kwargs):
         '''
@@ -129,3 +136,11 @@ class rectangle(aniobject):
             np.linspace(self._p2_y, self._p1_y, self._points // 4),
         ))
         super(rectangle, self).__init__(self._x, self._y, **kwargs)
+
+
+'''
+坐标系
+'''
+class axis(aniobject):
+    def __init__(self, p1_x, p1_y, p2_x, p2_y, gap_x = 1, gap_y = 1):
+        pass

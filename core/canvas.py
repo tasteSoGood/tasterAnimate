@@ -30,6 +30,7 @@ class canvas:
         self._cairo_context = ctx
 
         self._animate_objs = {}
+        self._bg_objs = {}
 
     def get_cairo_context(self):
         return ctx
@@ -49,7 +50,10 @@ class canvas:
 
     def update(self, clear = False):
         # 写入帧
-        for key, obj in self._animate_objs.items():
+        for obj in self._bg_objs.values():
+            obj.draw(self._cairo_context)
+
+        for obj in self._animate_objs.values():
             obj.draw(self._cairo_context)
 
         self._animate.write_frame(self._frame_array)
@@ -64,6 +68,12 @@ class canvas:
 
     def del_animate_obj(self, obj):
         del self._animate_objs[id(obj)]
+
+    def add_bg_obj(self, obj):
+        self._bg_objs[id(obj)] = obj # 方便今后索引
+
+    def del_bg_obj(self, obj):
+        del self._bg_objs[id(obj)]
 
     def save(self):
         self._animate.close_writing_pipeline()
