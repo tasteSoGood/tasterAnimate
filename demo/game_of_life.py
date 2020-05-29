@@ -8,10 +8,11 @@ class game_of_life:
     """
     康威生命游戏
     """
+
     def __init__(self, width, height):
         self._row = height
         self._col = width
-        self._board = np.zeros((self._row, self._col), dtype = np.uint8)
+        self._board = np.zeros((self._row, self._col), dtype=np.uint8)
 
     def random_init(self, seed_nums):
         x = np.random.randint(0, self._row, seed_nums)
@@ -24,9 +25,16 @@ class game_of_life:
 
     def _count_live(self, i, j):
         board = self._board
-        return board[i - 1, j - 1] + board[i - 1, j] + board[i - 1, j + 1] \
-             + board[i, j - 1] + board[i, j + 1] \
-             + board[i + 1, j - 1] + board[i + 1, j] + board[i + 1, j + 1]
+        return (
+            board[i - 1, j - 1]
+            + board[i - 1, j]
+            + board[i - 1, j + 1]
+            + board[i, j - 1]
+            + board[i, j + 1]
+            + board[i + 1, j - 1]
+            + board[i + 1, j]
+            + board[i + 1, j + 1]
+        )
 
     def update(self):
         temp_board = self._board.copy()
@@ -49,11 +57,10 @@ class game_of_life:
 
 def update_from_board(board, row_scale, col_scale):
     res = board.copy() * 255
-    res = np.repeat(res, row_scale, axis = 0)
-    res = np.repeat(res, col_scale, axis = 1)
+    res = np.repeat(res, row_scale, axis=0)
+    res = np.repeat(res, col_scale, axis=1)
     res = res.reshape((*res.shape, 1))
-    return np.concatenate((res, res, res, res), axis = -1)
-
+    return np.concatenate((res, res, res, res), axis=-1)
 
 
 def pattern(board, i, j):
@@ -63,7 +70,7 @@ def pattern(board, i, j):
 
 def main():
     width, height, scale = 128, 128, 16
-    canv = canvas(width * scale, height * scale, 1, 'output.mp4')
+    canv = canvas(width * scale, height * scale, 1, "output.mp4")
     game = game_of_life(width, height)
 
     board = game.get_board()
@@ -76,10 +83,10 @@ def main():
 
     for time in range(300):
         game.update()
-        canv.set_frame_array(update_from_board(game.get_board(), scale, scale))
+        canv.frame_array = update_from_board(game.get_board(), scale, scale)
         canv.update()
 
         if time % 10 == 0:
-            print('正在写入第%d帧......' % time)
+            print("正在写入第%d帧......" % time)
 
     canv.save()

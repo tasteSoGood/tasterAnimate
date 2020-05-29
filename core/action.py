@@ -2,6 +2,7 @@ import numpy as np
 from config.constants import VIDEO_FRAME_RATE
 from core.aniobject import aniobject
 
+
 def transform_style(frames, style):
     # 移动风格
     x = np.linspace(0, 1, frames)
@@ -13,8 +14,9 @@ def transform_style(frames, style):
         y = ((-0.5 * np.cos(np.pi * x) + 0.5) * frames).astype(int)
     return y
 
+
 '''
-aniobject的变换
+对象到对象的平滑过渡
 '''
 def obj2obj(canv, src, dst, time, style = 'cos'):
     if src.points != dst.points:
@@ -22,17 +24,17 @@ def obj2obj(canv, src, dst, time, style = 'cos'):
         src.interpolate_obj(dst)
 
     frames = time * VIDEO_FRAME_RATE
-    src_path = src.get_path()
-    dst_path = dst.get_path()
+    src_path = src.path
+    dst_path = dst.path
     src_color = src.fill_color if src.is_fill else (0, 0, 0, 0)
     dst_color = dst.fill_color if dst.is_fill else (0, 0, 0, 0)
 
     for i in transform_style(frames, style):
-        temp_obj = aniobject(
+        temp_obj = aniobject((
             src_path[0] + i * (dst_path[0] - src_path[0]) / frames,
             src_path[1] + i * (dst_path[1] - src_path[1]) / frames
-        )
-        temp_obj.set_fill_color(
+        ))
+        temp_obj.fill_color = (
             src_color[0] + i * (dst_color[0] - src_color[0]) / frames,
             src_color[1] + i * (dst_color[1] - src_color[1]) / frames,
             src_color[2] + i * (dst_color[2] - src_color[2]) / frames,
@@ -79,18 +81,18 @@ def obj2obj_pairs(canv, obj_pairs, style = 'cos'):
                 canv.add_animate_obj(pair[1])
                 final_objs.add(pair[1])
             else:
-                src_path = pair[0].get_path()
-                dst_path = pair[1].get_path()
+                src_path = pair[0].path
+                dst_path = pair[1].path
                 src_color = pair[0].fill_color if pair[0].is_fill else (0, 0, 0, 0)
                 dst_color = pair[1].fill_color if pair[1].is_fill else (0, 0, 0, 0)
 
                 cur_i = pair[2][pair[3]]
 
-                temp_obj = aniobject(
+                temp_obj = aniobject((
                     src_path[0] + cur_i * (dst_path[0] - src_path[0]) / cur_frames,
                     src_path[1] + cur_i * (dst_path[1] - src_path[1]) / cur_frames
-                )
-                temp_obj.set_fill_color(
+                ))
+                temp_obj.fill_color = (
                     src_color[0] + cur_i * (dst_color[0] - src_color[0]) / cur_frames,
                     src_color[1] + cur_i * (dst_color[1] - src_color[1]) / cur_frames,
                     src_color[2] + cur_i * (dst_color[2] - src_color[2]) / cur_frames,
@@ -106,3 +108,14 @@ def obj2obj_pairs(canv, obj_pairs, style = 'cos'):
 
     for obj in final_objs:
         canv.del_animate_obj(obj)
+
+
+'''
+静止
+'''
+def hold(canv, src, time):
+    if src not in canv.animate_objs:
+        canv.add_animate_obj(src)
+
+    for i in range(time * VIDEO_FRAME_RATE):
+        canv.update(clear = True)

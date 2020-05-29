@@ -3,7 +3,7 @@ import numpy as np
 from config.constants import FFMPEG_BIN
 from config.constants import VIDEO_FRAME_RATE
 
-class animate:
+class animate(object):
     def __init__(self, width, height, video_name = 'untitled.mp4', frame_rate = VIDEO_FRAME_RATE):
         self._width = width
         self._height = height
