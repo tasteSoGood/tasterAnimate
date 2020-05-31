@@ -27,6 +27,9 @@ def obj2obj(canv, src, dst, time, style = 'cos'):
         dst.interpolate_obj(src)
 
     frames = time * VIDEO_FRAME_RATE
+    if frames < 1:
+        frames = 1
+
     src_path = src.path
     dst_path = dst.path
     src_color = src.fill_color
@@ -64,19 +67,23 @@ def obj2obj_pairs(canv, *obj_pairs, style = 'cos'):
         elif pair[0].points > pair[1].points:
             pair[1].interpolate_obj(pair[0])
 
+        frames = pair[2] * VIDEO_FRAME_RATE
+        if frames < 1:
+            frames = 1
+
         if len(pair) == 3:
             obj_pair_list.append([
                 pair[0], pair[1],
-                transform_style(0, pair[2] * VIDEO_FRAME_RATE, pair[2] * VIDEO_FRAME_RATE, style), 0
+                transform_style(0, frames, pair[2] * VIDEO_FRAME_RATE, style), 0
             ]) # 最后一个元素表示当前帧数
         elif len(pair) == 4:
             obj_pair_list.append([
                 pair[0], pair[1],
-                transform_style(0, pair[2] * VIDEO_FRAME_RATE, pair[2] * VIDEO_FRAME_RATE, pair[3]), 0
+                transform_style(0, frames, pair[2] * VIDEO_FRAME_RATE, pair[3]), 0
             ]) # 最后一个元素表示当前帧数
 
-        if pair[2] * VIDEO_FRAME_RATE > max_frame:
-            max_frame = pair[2] * VIDEO_FRAME_RATE
+        if frames > max_frame:
+            max_frame = frames
 
     final_objs = set({})
     for f in range(max_frame):
@@ -126,7 +133,11 @@ def hold(canv, *objs, time = 1.0):
         if src not in canv.animate_objs:
             canv.add_animate_obj(src)
 
-    for i in range(int(time * VIDEO_FRAME_RATE)):
+    frames = int(time * VIDEO_FRAME_RATE)
+    if frames < 1:
+        frames = 1
+
+    for i in range(frames):
         canv.update(clear = True)
 
     for src in objs:
@@ -150,6 +161,8 @@ def rotate(canv, *objs, deg = 90, time = 1.0, style = 'cos'):
             canv.add_animate_obj(src)
 
     frames = time * VIDEO_FRAME_RATE
+    if frames < 1:
+        frames = 1
 
     origin_path = {}
     for src in objs:
@@ -179,6 +192,8 @@ def show_creation(canv, *objs, time = 1.0, style = 'cos'):
         src.points = max_points
 
     frames = time * VIDEO_FRAME_RATE
+    if frames < 1:
+        frames = 1
 
     origin_path = {}
     for src in objs:
@@ -198,6 +213,8 @@ def show_creation(canv, *objs, time = 1.0, style = 'cos'):
 '''
 def fade_in(canv, *objs, time = 1.0, style = 'cos'):
     frames = time * VIDEO_FRAME_RATE
+    if frames < 1:
+        frames = 1
     path_alpha_style, fill_alpha_style = {}, {}
     origin_path_color, origin_fill_color = {}, {}
     for src in objs:
@@ -221,6 +238,8 @@ def fade_in(canv, *objs, time = 1.0, style = 'cos'):
 
 def fade_out(canv, *objs, time = 1.0, style = 'cos'):
     frames = time * VIDEO_FRAME_RATE
+    if frames < 1:
+        frames = 1
     path_alpha_style, fill_alpha_style = {}, {}
     origin_path_color, origin_fill_color = {}, {}
     for src in objs:

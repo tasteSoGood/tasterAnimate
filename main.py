@@ -71,5 +71,21 @@ def demo5():
 
     canv.save()
 
+def demo6():
+    width, height = 3000, 1600
+    canv = canvas(width, height, 20, 'output.mp4')
+    # canv.add_function(lambda pos: (pos[0] / (pos[0] ** 2 + pos[1] ** 2), pos[1] / (pos[0] ** 2 + pos[1] ** 2))) # 复平面变换 z -> 1/z
+    canv.add_function(lambda pos: (pos[0] * np.cos(pos[1]), pos[0] * np.sin(pos[1]))) # 平面坐标转极坐标
+    canv.set_bg_color(0, 0, 0)
+    x = np.linspace(-3 * np.pi, 3 * np.pi, 2000)
+    obj2 = aniobject((x, -3 * np.sin(2 * x)))
+    ca.show_creation(canv, obj2, time = 3)
+    for i in np.linspace(-3, 3, 90):
+        obj2.path = (x, i * np.sin(2 * x))
+        ca.hold(canv, obj2, time = 0.01)
+
+    ca.fade_out(canv, obj2, time = 2)
+    canv.save()
+
 if __name__ == "__main__":
-    demo5()
+    demo6()

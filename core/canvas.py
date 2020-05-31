@@ -29,6 +29,12 @@ class canvas(object):
         self._ylims = (-self._scale / 2, self._scale / 2)
         self._coordinate = coordinate(self._xlims, self._ylims)
 
+        # 为画布加入一个坐标变换
+        self._func = lambda pos: pos
+
+    def add_function(self, func):
+        self._func = func
+
     @property
     def xlims(self):
         return self._xlims
@@ -92,7 +98,7 @@ class canvas(object):
             ctx.set_dash([0.1, 0.1, 0.1, 0.1])
         ctx.new_path()
         for p in path_array:
-            ctx.line_to(*p)
+            ctx.line_to(*self._func(p))
         ctx.stroke_preserve()
         ctx.close_path()
         ctx.set_source_rgba(*fill_color)
