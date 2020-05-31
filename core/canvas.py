@@ -21,6 +21,20 @@ class canvas(object):
         self._animate.open_writing_pipeline()
         self._bg_color = None
 
+        self._cairo_context = self._gen_cairo_context()
+
+        self._animate_objs = {}
+        self._bg_objs = {}
+
+    @property
+    def xlims(self):
+        return (-(self._frame_width / self._frame_height * self._scale) / 2, (self._frame_width / self._frame_height * self._scale) / 2)
+
+    @property
+    def ylims(self):
+        return (-self._scale / 2, self._scale / 2)
+
+    def _gen_cairo_context(self):
         # 利用cairo产生画布
         surface = cairo.ImageSurface.create_for_data(
             self._frame_array, cairo.FORMAT_ARGB32, self._frame_width, self._frame_height
@@ -37,10 +51,7 @@ class canvas(object):
                 0.5,
             )
         )
-        self._cairo_context = ctx
-
-        self._animate_objs = {}
-        self._bg_objs = {}
+        return ctx
 
     def set_bg_color(self, red, green, blue, alpha=1.0):
         # 设置并绘制背景
