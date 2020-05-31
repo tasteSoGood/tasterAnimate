@@ -3,6 +3,7 @@ from core.animate import animate
 from core.aniobject import aniobject
 import cairo
 from config.constants import VIDEO_FRAME_RATE
+from core.coordinate import coordinate
 
 
 class canvas(object):
@@ -18,21 +19,23 @@ class canvas(object):
         self._scale = scale
         self._animate = animate(self._frame_width, self._frame_height, video_name)
         self._frame_array = np.zeros((self._frame_height, self._frame_width, 4), dtype=np.uint8)
+
         self._animate.open_writing_pipeline()
         self._bg_color = None
-
         self._cairo_context = self._gen_cairo_context()
-
         self._animate_objs = {}
         self._bg_objs = {}
+        self._xlims = (-(self._frame_width / self._frame_height * self._scale) / 2, (self._frame_width / self._frame_height * self._scale) / 2)
+        self._ylims = (-self._scale / 2, self._scale / 2)
+        self._coordinate = coordinate(self._xlims, self._ylims)
 
     @property
     def xlims(self):
-        return (-(self._frame_width / self._frame_height * self._scale) / 2, (self._frame_width / self._frame_height * self._scale) / 2)
+        return self._xlims
 
     @property
     def ylims(self):
-        return (-self._scale / 2, self._scale / 2)
+        return self._ylims
 
     def _gen_cairo_context(self):
         # 利用cairo产生画布
@@ -61,11 +64,13 @@ class canvas(object):
 
     def update(self, clear=False):
         # 写入帧
+        self._coordinate.draw(self)
+
         for obj in self._bg_objs.values():
-            obj.draw(self._cairo_context)
+            obj.draw(self)
 
         for obj in self._animate_objs.values():
-            obj.draw(self._cairo_context)
+            obj.draw(self)
 
         self._animate.write_frame(self._frame_array)
 
@@ -73,6 +78,27 @@ class canvas(object):
             # 清理画布背景
             self._cairo_context.set_source_rgba(*self._bg_color)
             self._cairo_context.paint()
+
+    def draw_path(self, path_array, path_color, path_width, fill_color, dashed):
+        '''
+        直接接触cairo.Context的方法
+        path_array.shape = (2, n)
+        '''
+        path_array = np.array(path_array).T # 转成 (n, 2)
+        ctx = self._cairo_context
+        ctx.set_source_rgba(*path_color)
+        ctx.set_line_width(path_width)
+        if dashed:
+            ctx.set_dash([0.1, 0.1, 0.1, 0.1])
+        ctx.new_path()
+        for p in path_array:
+            ctx.line_to(*p)
+        ctx.stroke_preserve()
+        ctx.close_path()
+        ctx.set_source_rgba(*fill_color)
+        ctx.fill()
+        if dashed:
+            ctx.set_dash([1, 0])
 
     def add_animate_obj(self, obj):
         self._animate_objs[id(obj)] = obj  # 方便今后索引
@@ -107,7 +133,7 @@ class canvas(object):
 
     @property
     def context(self):
-        return ctx
+        return self._cairo_context
 
     @property
     def frame_array(self):

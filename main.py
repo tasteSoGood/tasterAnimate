@@ -59,14 +59,15 @@ def demo5():
     width, height = 3000, 1600
     canv = canvas(width, height, 10, 'output.mp4')
     canv.set_bg_color(0, 0, 0)
-    print(canv.xlims)
-    print(canv.ylims)
 
-    c1 = circle(0, 0, 2, fill_color = (1, 0, 0, 0.5))
+    c1 = circle(0, 0, 2, fill_color = (255 / 225.0, 130 / 225.0, 203 / 225.0, 0.8))
     c2 = circle(0, 0, 3)
     ca.show_creation(canv, c1, c2)
     ca.fade_out(canv, c1, c2)
     ca.fade_in(canv, c1, c2)
+
+    r = rectangle(3, 1, 4, -1, fill_color = (255 / 225.0, 130 / 225.0, 203 / 225.0, 0.8))
+    ca.obj2obj_pairs(canv, (c1, r, 1), (c2, r, 2))
 
     canv.save()
 

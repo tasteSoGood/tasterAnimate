@@ -29,8 +29,8 @@ def obj2obj(canv, src, dst, time, style = 'cos'):
     frames = time * VIDEO_FRAME_RATE
     src_path = src.path
     dst_path = dst.path
-    src_color = src.fill_color if src.is_fill else (0, 0, 0, 0)
-    dst_color = dst.fill_color if dst.is_fill else (0, 0, 0, 0)
+    src_color = src.fill_color
+    dst_color = dst.fill_color
 
     for i in transform_style(0, frames, frames, style):
         temp_obj = src.copy()
@@ -49,7 +49,7 @@ def obj2obj(canv, src, dst, time, style = 'cos'):
         canv.del_animate_obj(temp_obj)
 
 
-def obj2obj_pairs(canv, obj_pairs, style = 'cos'):
+def obj2obj_pairs(canv, *obj_pairs, style = 'cos'):
     '''
     解决多组对象同时变换的问题
     obj_pairs = (src, dst, time) 或者 (src, dst, time, style)
@@ -90,8 +90,8 @@ def obj2obj_pairs(canv, obj_pairs, style = 'cos'):
             else:
                 src_path = pair[0].path
                 dst_path = pair[1].path
-                src_color = pair[0].fill_color if pair[0].is_fill else (0, 0, 0, 0)
-                dst_color = pair[1].fill_color if pair[1].is_fill else (0, 0, 0, 0)
+                src_color = pair[0].fill_color
+                dst_color = pair[1].fill_color
 
                 cur_i = pair[2][pair[3]]
 

@@ -117,18 +117,8 @@ class aniobject(object):
     绘制
     """
 
-    def draw(self, ctx):
-        ctx.set_source_rgba(*self._path_color)
-        ctx.set_line_width(self._path_width)
-        if self._dashed:
-            ctx.set_dash([0.1, 0.1, 0.1, 0.1])
-        ctx.new_path()
-        for p in zip(*self._path):
-            ctx.line_to(p[0], p[1])
-        ctx.stroke_preserve()
-        ctx.close_path()
-        ctx.set_source_rgba(*self._fill_color)
-        ctx.fill()
+    def draw(self, canv):
+        canv.draw_path(self._path, self._path_color, self._path_width, self._fill_color, self._dashed)
 
     """
     工具函数
