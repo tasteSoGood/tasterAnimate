@@ -88,4 +88,4 @@ def demo6():
     canv.save()
 
 if __name__ == "__main__":
-    demo6()
+    demo5()

@@ -155,6 +155,13 @@ class aniobject(object):
 
         self._path = affine_transform(path, mat)
 
+    '''
+    变换: 大概率需要子类重载
+    '''
+    def apply_function(self, func):
+        for i in range(self._points):
+            self._path[0][i], self._path[1][i] = func((self._path[0][i], self._path[1][i]))
+
 """
 正圆
 """
